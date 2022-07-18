@@ -10,27 +10,42 @@ export const meta: MetaFunction = () => ({
 // When your form sends a POST, the action is called on the server.
 // - https://remix.run/api/conventions#action
 // - https://remix.run/guides/data-updates
-export const action: ActionFunction = async ({ request }) => {
-  const formData = await request.formData();
-  const answer = formData.get("answer");
+// export const action: ActionFunction = async ({ request }) => {
+//   const formData = await request.formData();
+//   const answer = formData.get("answer");
 
-  // Typical action workflows start with validating the form data that just came
-  // over the network. Clientside validation is fine, but you definitely need it
-  // server side.  If there's a problem, return the data and the component can
-  // render it.
-  if (!answer || typeof answer !== "string") {
-    return json("Come on, at least try!", { status: 400 });
+//   // Typical action workflows start with validating the form data that just came
+//   // over the network. Clientside validation is fine, but you definitely need it
+//   // server side.  If there's a problem, return the data and the component can
+//   // render it.
+//   if (!answer || typeof answer !== "string") {
+//     return json("Come on, at least try!", { status: 400 });
+//   }
+
+//   if (answer !== "egg") {
+//     return json(`Sorry, ${answer} is not right.`, { status: 400 });
+//   }
+
+//   // Finally, if the data is valid, you'll typically write to a database or send or
+//   // email or log the user in, etc. It's recommended to redirect after a
+//   // successful action, even if it's to the same place so that non-JavaScript workflows
+//   // from the browser doesn't repost the data if the user clicks back.
+//   return redirect("/demos/correct");
+// };
+
+export let action: ActionFunction = async ({ request }) => {
+  let formData = await request.formData();
+  switch (formData.get("action")) {
+    case "like": {
+      return "I liked this webpage";
+    }
+    case "dislike": {
+      return "I didn't like this webpage";
+    }
+    default: {
+      throw new Error("Unknown action");
+    }
   }
-
-  if (answer !== "egg") {
-    return json(`Sorry, ${answer} is not right.`, { status: 400 });
-  }
-
-  // Finally, if the data is valid, you'll typically write to a database or send or
-  // email or log the user in, etc. It's recommended to redirect after a
-  // successful action, even if it's to the same place so that non-JavaScript workflows
-  // from the browser doesn't repost the data if the user clicks back.
-  return redirect("/demos/correct");
 };
 
 export default function ActionsDemo() {
@@ -56,7 +71,7 @@ export default function ActionsDemo() {
           `action` export. Any route can export an action to handle data
           mutations.
         </p>
-        <Form method="post" className="remix__form">
+        {/* <Form method="post" className="remix__form">
           <h3>Post an Action</h3>
           <p>
             <i>What is more useful when it is broken?</i>
@@ -67,6 +82,26 @@ export default function ActionsDemo() {
           </label>
           <div>
             <button>Answer!</button>
+          </div>
+          {actionMessage ? (
+            <p>
+              <b>{actionMessage}</b>
+            </p>
+          ) : null}
+        </Form> */}
+        <Form method="post" className="remix__form">
+          <h3>Post an Action</h3>
+          <p>
+            <i>Did you like this page?</i>
+          </p>
+          <label>
+            <div>Like:</div>
+            <input type="radio" name="action" value="like" />
+            <div>Dislike:</div>
+            <input type="radio" name="action" value="dislike" />
+          </label>
+          <div>
+            <button>Submit!</button>
           </div>
           {actionMessage ? (
             <p>
